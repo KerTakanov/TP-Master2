@@ -9,13 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class GetMeteoState extends StateHandler {
+public class SendUserInfosState extends StateHandler {
     @Autowired
     private CamundaRestService camundaRestService;
 
     @Override
     protected String topicname() {
-        return "meteo";
+        return "get-user-info";
     }
 
     @Override

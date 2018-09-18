@@ -10,12 +10,12 @@
       <bpmn:incoming>SequenceFlow_02b5tpy</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_07czdm1</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="Task_0mxmufn" name="getUserInfos" camunda:type="external" camunda:topic="meteo">
+    <bpmn:serviceTask id="Task_0mxmufn" name="getUserInfos" camunda:type="external" camunda:topic="get-user-infos">
       <bpmn:incoming>SequenceFlow_13gjskh</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_02b5tpy</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:sequenceFlow id="SequenceFlow_07czdm1" sourceRef="Task_1dzje5x" targetRef="Task_1ppn845" />
-    <bpmn:serviceTask id="Task_1ppn845" name="send meteo info" camunda:type="external" camunda:topic="send-meteo">
+    <bpmn:serviceTask id="Task_1ppn845" name="send meteo infoteo" camunda:type="external" camunda:topic="send-meteo">
       <bpmn:incoming>SequenceFlow_07czdm1</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0tk6gso</bpmn:outgoing>
     </bpmn:serviceTask>

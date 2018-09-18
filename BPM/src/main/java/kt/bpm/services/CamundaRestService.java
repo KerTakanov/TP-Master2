@@ -1,10 +1,10 @@
 package kt.bpm.services;
 
-import com.geodis.isscserver.model.soap.IncidentObject;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import kt.bpm.models.MeteoMessage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -21,11 +21,11 @@ public class CamundaRestService {
     @Value("${camunda.rest.task.delete}")
     String DELETE_TASK_URL;
 
-    public HttpResponse<JsonNode> startProcess(String processname, IncidentObject incidentObject) throws UnirestException {
+    public HttpResponse<JsonNode> startProcess(String processname, MeteoMessage meteoMessage) throws UnirestException {
         System.out.println("start process rest");
         return Unirest.post(CAMUNDA_URL + String.format(START_PROCESS_URL, processname))
                 .header("Content-Type", "application/json")
-                .body(incidentObject)
+                .body(meteoMessage)
                 .asJson();
     }
 
