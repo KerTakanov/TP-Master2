@@ -10,9 +10,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SendUserInfosState extends StateHandler {
-    @Autowired
-    private CamundaRestService camundaRestService;
-
     @Override
     protected String topicname() {
         return "get-user-info";
