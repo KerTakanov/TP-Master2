@@ -18,5 +18,6 @@ public class GetUserInfosState extends StateHandler {
     @Override
     protected void execute(ExternalTask externalTask, ExternalTaskService externalTaskService) throws UnirestException {
         String CP = (String) context.get("postalCode");
+        output.put("postalCode", CP.trim().replaceAll(" ", ""));
     }
 }
