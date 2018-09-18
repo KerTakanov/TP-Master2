@@ -1,0 +1,11 @@
+if (id == 1)
+    send(id + 1, msg)
+    send(last, msg)e
+else if (id <= nb_node / 2 + 1)
+    recv(id - 1, msg)
+    if (id + 1 <= nb_node / 2 + 1)
+        send(id + 1, msg)
+else
+    recv((id + 1) % nb_node, msg)
+    if (id - 1 > nb_node / 2 + 1)
+        send(id - 1, msg)

@@ -1,0 +1,297 @@
+/**
+   @page tp0 Cryptographie historique
+   
+   Vous allez développer quelques petits programmes en ligne pour
+   crypter et décrypter du texte codé avec des techniques simples de
+   cryptographie, plus spécifiquement le chiffrement de Vigenère.  Il
+   n'est pas obligatoire de coder en C++, mais l'énoncé et le code
+   fourni sont en C++.
+
+   
+   @section sec0_1 1. Fréquence des lettres en français
+ 
+   Vous récupérerez les fichiers Makefile, utils.h, utils.cxx,
+   freqs.h, freqs.cxx, test-freqs.cxx, filter-az.cxx dans l'archive
+   fournie (cf http://www.lama.univ-savoie.fr/~lachaud/Cours/INFO006/Tests/doc/html/index.html).
+   
+   Ils vous donnent des fonctions pour lire les caractères sur
+   l'entrée standard, les convertir en fichiers composés uniquement de
+   a-z ou A-Z. La fréquence des lettres et digrammes vous est aussi
+   donné. Attention, les fonctions déclarées ne sont pas toutes écrites !
+   
+   Un ensemble de fichiers clairs ou chiffrés vous est donné dans
+   l'archive (lafontaine.txt lafontaine-az.txt lafontaine-c*.txt
+   baudelaire.txt etc). Les versions chiffrées sont marqués par -c0,
+   -c1, etc. Plus le chiffre est important, plus la clé est longue et
+   le texte chiffré difficile à déchiffrer.
+
+   Lisez puis testez \c test-freqs. Vous constaterez sans surprise que
+   la fréquence des lettres en français est loin d'être aléatoire.
+   
+   @section sec0_2 2. Chiffre de Vigenère
+   
+   Nous prenons la convention que tout texte clair est écrit en
+   minuscule (a-z) sans ponctuation. Par exemple
+
+   \verbatim
+souventpoursamuserleshommesdquipageprennentdesalbatrosvastesoiseauxdesmersquisui
+   \endverbatim
+
+   Le programme `filter-az` permet justement d'enlever toute la ponctuation d'un texte, par exemple ainsi:
+   \verbatim
+prompt$ cat baudelaire.txt | ./filter-az > baudelaire-az.txt
+   \endverbatim
+
+   Un texte chiffré est toujours écrit en majuscules, par exemple
+
+   \verbatim
+ROHUMOTGNUERINUJDRYDAIODLEFCYVIGZGROZFNEDNGCMTACAAGQWTVRRTRRWJSVZUKCMTMVQSDTQTUZ
+   \endverbatim
+
+   Ecrire une fonction \c chiffreVignere qui chiffre un texte clair en
+   un texte chiffré à l'aide d'une clé de taille quelconque.
+
+   \code
+//   Le clair en minuscule.
+//   La clé est écrite en majuscule ("ADEF..DB").
+//   La sortie est en majuscule.
+std::string chiffreVigenere( const std::string & clair, 
+			     const std::string & cle );
+   \endcode
+   
+   Ecrire ensuite une mini-commande en ligne pour pouvoir chiffrer un
+   clair donné sur l'entrée standard et sortir le chiffré sur la
+   sortie standard.
+
+\code
+$ cat baudelaire-az.txt | ./chiffre-vigenere TOTO
+LCNJXBMDHIKGTANGXFESLVHAFSLRJIBDTUXDKSGBXBMRXGTZUOMFHGOOLHXGHWLSTIQRXGFSKGJIBGNWOSGHBBWCESGHLQHAIOZBHBLRXJHMTUXZXBTJBFXUEWLGTBMGNFESLUHIYTKSLOFSKGTDXWGSESLCGHBZLRICLGLIKZXGIZTBVVXGJIXQXGKCBGWSEOSIKATZTRKCBHLSMVHBMSNLEOBGLSGHIWMSNGXAXBMZXIKGZFTBWSLOBZXGUZTBVVXGVCFAXRXGTJBFHBLHKOGSKQMRXIQQXJHMTUXIKOBZVCFAXWESLHZONQASXHOSNZXZNWGOZIKSLWUSTIJIBZXGMQHABENSXHEOBREIGOZOVSLCGPXQTJXQNBUFESZIXIESEONHKSFWFSXBUCBHTBMZBBYWKAXENWOCEOBHESICMSXGMGXAUZTPESTIIFBBVSWSLBNSLENWAOGHXZTHXAIHXSMGXFBHWSEOKQASKF
+\endcode
+
+   @section sec0_3 3. Analyse des fréquences
+
+   Ecrire maintenant une fonction qui retourne la fréquence de chaque
+   lettre majuscule dans une chaîne de caractères.
+
+\code
+// @param s une chaîne de caractères chiffrée (A-Z).
+// @return la fréquence des lettres 'A' à 'Z' (0='A', 25='Z').
+//
+std::vector<float> frequencies( const std::string & s );
+\endcode
+
+   Faire ensuite la mini-commande en ligne pour afficher les
+   fréquences de chaque lettre d'un chiffré.
+
+\code
+$ cat baudelaire-c1.txt | ./check-freqs
+A=0.0495575 B=0.0495575 C=0.0831858 D=0.00884956 E=0.0141593 F=0.0318584 G=0.0495575 H=0.0513274 I=0.0442478 J=0.0442478 K=0.0230088 L=0.0283186 M=0.079646 N=0.0176991 O=0.0371681 P=0.0247788 Q=0.0389381 R=0.0159292 S=0.0460177 T=0.0566372 U=0.0300885 V=0.0230088 W=0.0265487 X=0.0265487 Y=0.0637168 Z=0.0353982 
+\endcode
+
+   Vous écrirez ensuite la fonction qui calcule l'indice de
+   coïncidence d'un texte (chiffré). Ecrivez ensuite les deux
+   fonctions suivantes: l'une qui retourne l'indice de coïncidence du
+   français, l'autre celui d'un texte dont les lettres sont tirées
+   uniformément au hasard. On pourra ainsi tester:
+
+\code
+$ cat lafontaine-az.txt | ./chiffre-vigenere AZERTY | ./check-freqs
+A=0.0272425 B=0.0192691 C=0.048505 D=0.0398671 E=0.0611296 F=0.0245847 G=0.0418605 H=0.0265781 I=0.0644518 J=0.033887 K=0.0425249 L=0.0458472 M=0.0524917 N=0.0378738 O=0.0192691 P=0.0299003 Q=0.0305648 R=0.0611296 S=0.048505 T=0.0644518 U=0.020598 V=0.0478405 W=0.0159468 X=0.0352159 Y=0.0358804 Z=0.0245847 
+Ic=0.0438004 Ifrench=0.0780531 Irand=0.0384615
+Likely random text or other cipher !
+\endcode
+
+   @section sec0_4 4. Cryptanalyse du chiffre de Vigenère
+
+   Vous utiliserez la fonction \c subtext, qui extrait d'une chaîne la
+   sous-chaîne partant du shift \c k et prenant un caractère tous les
+   \c r.
+\code
+std::string subtext( const std::string & s, int r, int k );
+\endcode
+
+   On pourra ensuite étoffer notre programme \c check-freqs pour qu'il
+   prenne deux paramètres optionnels (\c k et \c r donc) et affiche
+   les indices de coïncidences de la sous-chaîne.
+
+\code
+$ cat lafontaine-az.txt | ./chiffre-vigenere AZERTY | ./check-freqs 6 0
+A=0.0956175 B=0.00796813 C=0.0199203 D=0.0159363 E=0.10757 F=0.0199203 G=0.0239044 H=0.0119522 I=0.0717131 J=0.0239044 K=0 L=0.063745 M=0.0159363 N=0.0677291 O=0.0478088 P=0.0438247 Q=0.0199203 R=0.0438247 S=0.0756972 T=0.119522 U=0.0756972 V=0.0119522 W=0 X=0.00796813 Y=0.00398406 Z=0.00398406 
+Ic=0.0696656 Ifrench=0.0780531 Irand=0.0384615
+French text or mono-alphabetic ciphered text !
+\endcode
+
+   On s'aperçoit que l'indice de coïncidence est très proche de celui
+   du français lorsqu'on regarde un caractère tous les six.
+
+   Vous vérifierez que l'indice de coïncidence d'un texte aléatoire
+   est environ de 0.0384615, tandis que celui du français est proche
+   de 0.0780531.
+
+
+   Un texte sera donc un simple chiffrement mono-alphabétique si et
+   seulement l'indice de coïncidence est plus proche de celui du
+   français que de celui d'un texte aléatoire. Ecrivez donc cette
+   fonction qui prend en entrée un chiffré et donne en sortie un
+   booléen.
+
+   Il ne reste plus qu'à écrire la mini-commande \c detecte-vigenere
+   qui prend un texte sur l'entrée standard, teste des tailles de
+   chiffre entre 1 et taille du texte /10 (mettons), et retourne la
+   taille pour laquelle tous les shifts donnent un indice de
+   coïncidence proche de celui du français.
+
+   Une fois que la taille est trouvée, il suffit de trouver pour
+   chaque shift le bon code (parmi les 26 possibles). Vous maximiserez
+   l'indice de coïncidence mutuelle pour chaque lettre. Cela vous
+   donnera la clé choisie pour coder le texte. Ecrivez donc le
+   mini-programme qui affiche cette clé pour un texte chiffré donné en
+   entrée, ou qui indique que ce n'était pas le code de Vigenère si
+   aucune taille n'a pu fonctionner.
+
+   Trouvez les clés des textes chiffrés donnés. Testez aussi sur de
+   l'anglais. Est-ce que ça fonctionne aussi bien ?
+
+   On pourra s'inspirer du pseudo-code suivant:
+\verbatim
+string s = texte chiffre
+vector<float> freq_fr = frequenciesFrench()
+vector<float> freq_rd = frequenciesRandom()
+Ic_fr = coincidence( freq_fr )
+Ic_rd = coincidence( freq_rd )
+pour n de 1 a s.size() / 10 faire
+    nb_fr = 0
+    pour shift de 0 a n-1 faire
+        vector<float> freq = frequencies( substr( s, n, shift )
+        Ic = coincidence( freq )
+        Si Ic est plus proche de Ic_fr que de Ic_rd alors nb_fr++
+    Si nb_fr == n alors // c'est probalement la bonne taille
+        vector<char> cle( n )
+        pour i de 0 a n-1 faire
+             on cherche le caractere c entre A et Z qui maximise la coincidence mutuelle avec freq_fr
+             cle[ i ] = c
+        affiche( cle )
+\endverbatim
+
+   @section sec0_5 5. Pour aller un peu plus loin
+
+   @section sec0_5_1 5-1. Utilisation des digrammes
+
+   L'utilisation des seules fréquences de lettre implique que la
+   longueur de la clé de chiffrement doit être court par rapport à la
+   longueur du texte chiffré. En effet, on n'exploite pas du tout le
+   fait que certaines lettres ne se suivent quasiment jamais.
+
+   Pour pouvoir cracker des textes chiffrés avec des clés plus
+   longues, il suffit de faire le même travail que précédemment mais
+   sur des couples de lettres. On prendra donc les lettres deux par
+   deux et on vérifiera leur indice de coincidence (donc une somme sur
+   26*26 digrammes possibles). Il faudra donc qu'à la fois les lettres
+   (prises tous les k) et les digrammes forment un indice de
+   coincidence proche du français.
+
+   @note Pour bien améliorer la chance de trouver la clé, il faut que
+   la clé déduite à partir des lettres soit la même que la clé déduite
+   des digrammes des deux côtés. L'idéal est de trier et de comparer
+   après.
+
+   \code
+   diuzidhsbfsjf
+      H     // clé trouvé par lettre
+     CH     // clé trouvé pour le digramme gauche
+      HE    // clé trouvé pour le digramme gauche
+   // les trois sont d'accord, c'est probablement H !
+   \endcode
+   
+   @section sec0_5_2 5-2. Chiffrement par substitution
+
+   Le chiffrement par substitution est (un peu) plus complexe à
+   déchiffrer. La clé d'un tel chiffrement est une permutation de
+   (a-z). Vous pourrez écrire une commande de chiffrement qui chiffre
+   l'entrée standard avec un paramètre qui est une chaîne composée des
+   26 lettres A-Z dans un ordre quelconque. Une clé est par exemple:
+
+   \verbatim
+   AZERTYUIOPQSDFGHJKLMWXCVBN
+   \endverbatim
+
+   Cela correspond à la correspondence (permutation de a-z):
+   \verbatim
+   abcdefghijklmnopqrstuvwxyz
+   AZERTYUIOPQSDFGHJKLMWXCVBN
+   \endverbatim
+
+   Pour casser un tel chiffrement, il faut d'abord tester si le
+   chiffrement est mono-alphabétique avec l'indice de coïncidence. Si
+   tel est le cas, on commence par attribuer l'ordre des lettres qui
+   correspond à l'ordre des lettres le plus probable: la lettre la
+   plus fréquente est associée à la lettre la plus fréquente en
+   français (le e), la 2ème lettre ... la 2ème lettre la plus
+   fréquente en français (le a), etc. C'est bien sûr l'ordre qui
+   maximise l'indice de coïcidence.
+
+   Ensuite on fait un algorithme glouton (qui n'est pas sûr de donner
+   le bon résultat) qui va tenter d'échanger les lettres. Pour ce
+   faire, il faut mesurer l'indice de coïncidence mutuel des \b
+   digrammes. Notez que vous disposez de la fonction récupérant la
+   fréquences des digrammes en français. L'algorithme ressemble au
+   suivant:
+
+   \verbatim
+   Var cle: Tableau[0..25] de caracteres;
+   Var C : texte chiffre
+   Var P : texte clair
+
+   cle <- attributionParFrequenceDesLettres( C )
+   Pour i de 0 à 25
+       Icmax <- 0
+       jmax <- 0
+       Pour j de i a 25
+           Echange( cle[ i ], cle[ j ] )
+           P <- dechiffre( C, cle )
+           Icm <- IndiceCoincidenceMutuelleDigrammes( P, digrammes_fr )
+	   si ( Icm > Icmax ) 
+               jmax <- j
+               Icmax <- Icm
+           Echange( cle[ i ], cle[ j ] )
+       Echange( cle[ i ], cle[ jmax ] )
+   affiche( cle, dechiffre( C, cle ) )
+   \endverbatim
+
+   Mettez en oeuvre cet algorithme.
+
+   @section sec0_5_3 5-3. Longueur d'une clé de Vigenère
+
+   Il s'agit ici de tester quel est le ratio minimum entre longueur du
+   texte et longueur de la clé secrète. Pour l'établir, vous écrirez
+   un petit programme qui générera aléatoirement des clés de plus en
+   plus grande, puis qui testera si la cryptanalyse automatique
+   fonctionne toujours. Testez aussi sur différentes tailles de
+   documents.
+
+   Notez que l'on peut cracker des clés plus longues si on utilise
+   aussi les digrammes pour conforter les clés trouvées par
+   l'agorithme simple utilisant le simple indice de coincidence des
+   lettres.
+
+   @section sec0_6 6. Remise du TP
+
+   - La remise de ce TP n'est pas obligatoire mais vous accorde
+     quelques points bonus pour votre note globale de TP. 
+
+   - Ce TP peut être fait par binôme. 
+  
+   - Vous m'enverrez par email votre TP avant le \b xx \b
+     septembre \b 2018 \b minuit, via <a
+     href="http://www.lama.univ-savoie.fr/TPLab">TPLab</a>. Il faudra
+     une archive nommée TP0-[votre ou vos nom(s)] contenant tous les
+     fichiers sources, entêtes, makefile. 
+
+   - Vous me ferez un petit compte-rendu texte précisant l'\b état d'\b avancement
+     (ce qui marche, ce qui marche à moitié, et ce qui ne marche
+     pas). Vous me listerez les clés crackées.
+  
+   - Bien entendu, il faut que vos programmes compilent sous Linux.
+
+
+ */
