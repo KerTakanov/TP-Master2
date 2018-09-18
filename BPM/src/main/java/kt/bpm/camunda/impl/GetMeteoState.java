@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class GetMeteoState extends StateHandler {
     @Override
     protected String topicname() {
-        return "meteo";
+        return "get-meteo";
     }
 
     @Override
