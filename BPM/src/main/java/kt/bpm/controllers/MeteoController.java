@@ -24,7 +24,7 @@ public class MeteoController {
         Map<String, String> value = new HashMap<>();
 
         value.put("type", "String");
-        value.put("value", meteoMessage.getCp().trim().replaceAll(" ", ""));
+        value.put("value", meteoMessage.getPostalCode().trim().replaceAll(" ", ""));
 
         String pid = (String) camundaRestService.startProcess("Process_1", meteoMessage).getBody().getObject().get("id");
         camundaRestService.completeTask(Collections.singletonMap("variables",
