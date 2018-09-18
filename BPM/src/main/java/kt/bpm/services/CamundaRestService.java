@@ -2,11 +2,18 @@ package kt.bpm.services;
 
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.mashape.unirest.http.utils.MapUtil;
 import kt.bpm.models.MeteoMessage;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class CamundaRestService {
@@ -23,9 +30,9 @@ public class CamundaRestService {
 
     public HttpResponse<JsonNode> startProcess(String processname, MeteoMessage meteoMessage) throws UnirestException {
         System.out.println("start process rest");
+
         return Unirest.post(CAMUNDA_URL + String.format(START_PROCESS_URL, processname))
                 .header("Content-Type", "application/json")
-                .body(meteoMessage)
                 .asJson();
     }
 

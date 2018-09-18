@@ -21,10 +21,7 @@ public class SendMeteoState extends StateHandler {
 
     @Override
     protected void execute(ExternalTask externalTask, ExternalTaskService externalTaskService) throws UnirestException {
-        // blabla
-
-        System.out.println("Sending");
-        template.convertAndSend("/topic/meteo", new MeteoAnswer("blabla"));
-
+        System.out.println("ayyyyyyy");
+        template.convertAndSend("/topic/meteo", new MeteoAnswer("mes couilles"));
     }
 }
