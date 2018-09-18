@@ -17,6 +17,6 @@ public class GetMeteoState extends StateHandler {
     protected void execute(ExternalTask externalTask, ExternalTaskService externalTaskService) throws UnirestException {
         String CP = (String) context.get("postalCode");
 
-        // meteo rest
+
     }
 }
