@@ -1,5 +1,6 @@
 package kt.bpm.camunda.impl;
 
+import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import kt.bpm.camunda.StateHandler;
 import kt.bpm.models.MeteoAnswer;
@@ -21,9 +22,7 @@ public class SendMeteoState extends StateHandler {
 
     @Override
     protected void execute(ExternalTask externalTask, ExternalTaskService externalTaskService) throws UnirestException {
-        // blabla
 
-        System.out.println("Sending");
         template.convertAndSend("/topic/meteo", new MeteoAnswer("blabla"));
 
     }
