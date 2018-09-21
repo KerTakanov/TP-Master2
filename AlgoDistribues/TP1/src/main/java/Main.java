@@ -1,4 +1,5 @@
 import diffusions.DiffusionAnneau;
+import diffusions.DiffusionAnneauBi;
 import diffusions.DiffusionCentralisee;
 import diffusions.DiffusionHypercube;
 import mpi.MPI;
@@ -12,7 +13,7 @@ public class Main {
         int me = MPI.COMM_WORLD.Rank();
         int size = MPI.COMM_WORLD.Size();
 
-        int choix = 2;
+        int choix = 3;
 
         switch (choix) {
             case 1:
@@ -22,8 +23,10 @@ public class Main {
                 DiffusionAnneau.diffuser(6, "Anneau");
                 break;
             case 3:
-                DiffusionHypercube.diffuser(0, "Hypercube");
+                DiffusionHypercube.diffuser(3, "Hypercube");
                 break;
+            case 4:
+                DiffusionAnneauBi.diffuser(0, "Anneau Bidir");
         }
 
 
