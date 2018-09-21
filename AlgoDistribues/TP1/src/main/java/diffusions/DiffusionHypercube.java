@@ -18,13 +18,11 @@ public class DiffusionHypercube {
         int dest;
 
         if (me != sender) {
-            MPI.COMM_WORLD.Recv(buffer, 0, 1, MPI.OBJECT, MPI.ANY_SOURCE, 99);
-            System.out.println(String.format("%s received buf [%s, %s]", me, buffer[0], buffer[1]));
+            Status status = MPI.COMM_WORLD.Recv(buffer, 0, 2, MPI.OBJECT, MPI.ANY_SOURCE, 99);
+            System.out.println(String.format("%s received buf [%s, %s] from %d", me, buffer[0], buffer[1], status.source));
             dimension = Integer.parseInt(buffer[1]);
         } else {
-            buffer[0] = message;
             dimension = 0;
-            buffer[1] = "0";
         }
 
         do {
@@ -32,13 +30,9 @@ public class DiffusionHypercube {
 
             if (dest < size) {
                 dimension++;
-                buffer[1] = Integer.toString(dimension);
-                System.out.println(String.format("Buffer[1]=%s", buffer[1]));
-                buffer[0] = "oskdqods";
 
-                System.out.println(String.format("%s sending buf [%s, %s]", me, buffer[0], buffer[1]));
-
-                MPI.COMM_WORLD.Isend(buffer, 0, 1, MPI.OBJECT, dest, 99);
+                String[] _buffer = { message, Integer.toString(dimension) };
+                MPI.COMM_WORLD.Isend(_buffer, 0, 2, MPI.OBJECT, dest, 99);
             }
         } while (dest < size);
     }

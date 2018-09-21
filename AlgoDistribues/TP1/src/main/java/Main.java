@@ -12,14 +12,14 @@ public class Main {
         int me = MPI.COMM_WORLD.Rank();
         int size = MPI.COMM_WORLD.Size();
 
-        int choix = 3;
+        int choix = 2;
 
         switch (choix) {
             case 1:
                 DiffusionCentralisee.diffuser(0, "Centralisé");
                 break;
             case 2:
-                DiffusionAnneau.diffuser(0, "Anneau");
+                DiffusionAnneau.diffuser(6, "Anneau");
                 break;
             case 3:
                 DiffusionHypercube.diffuser(0, "Hypercube");
