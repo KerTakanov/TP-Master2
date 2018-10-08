@@ -5,6 +5,7 @@ import com.google.common.io.CharSink;
 import com.google.common.io.FileWriteMode;
 import com.google.common.io.Files;
 import messages.*;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +26,7 @@ public class Process implements Runnable, Messager, Broadcaster {
     private int score;
     private int nbLost = 0;
     private boolean played = false;
+    private int nbReady = 0;
 
     public Process(String name) {
         this.bus = EventBusService.getInstance();
@@ -44,7 +46,7 @@ public class Process implements Runnable, Messager, Broadcaster {
 
     @Override
     public void broadcast(Object payload) {
-        Message message = new Message(payload, stamp++, null);
+        Message message = new Message(payload, stamp++, null, id);
         if (bus != null) {
             bus.postEvent(message);
         }
@@ -54,7 +56,7 @@ public class Process implements Runnable, Messager, Broadcaster {
     @Subscribe
     @AllowConcurrentEvents
     public void receive(Message message) {
-        if (message.getDest() != null && id != message.getDest()) {
+        if (message.getDest() != null && id != message.getDest() && message.getSender() != id) {
             return;
         }
 
@@ -68,6 +70,8 @@ public class Process implements Runnable, Messager, Broadcaster {
             onLost();
         } else if (message.getPayload() instanceof Stop) {
             stop();
+        } else if (message.getPayload() instanceof Ready) {
+            onReady();
         } else {
             onDice((Integer) message.getPayload());
         }
@@ -75,7 +79,6 @@ public class Process implements Runnable, Messager, Broadcaster {
 
     private void onLost() {
         nbLost++;
-        System.out.println(stamp + " " + (nbLost == NB_PLAYERS - 1 && highest));
 
         if (nbLost == NB_PLAYERS - 1 && highest) {
             System.out.println(String.format("\n{%d} is the winner !", id));
@@ -92,11 +95,15 @@ public class Process implements Runnable, Messager, Broadcaster {
                 chs.write(id + "\n");
             } catch (IOException ignore) { /* ignored */}
 
+            release();
 
             broadcast(new Synchronize());
             onSynchronize();
-            release();
         }
+    }
+
+    private void onReady() {
+        nbReady += 1;
     }
 
     private void onDice(int score) {
@@ -107,20 +114,20 @@ public class Process implements Runnable, Messager, Broadcaster {
     }
 
     public void onSynchronize() {
-        // io
-        highest = true;
         nbLost = 0;
         score = 0;
+        highest = true;
         played = false;
+
+        broadcast(new Ready());
+        onReady();
     }
 
     public void onToken() {
-        System.out.println(String.format("{%d} received the token", id));
         hasToken = true;
     }
 
     public void request() {
-        System.out.println(String.format("{%d} requesting...", id));
         while (!hasToken) {
             try {
                 Thread.sleep(1);
@@ -128,13 +135,11 @@ public class Process implements Runnable, Messager, Broadcaster {
                 /* ignored */
             }
         }
-        System.out.println("Got it...");
     }
 
     public void release() {
         if (hasToken) {
             hasToken = false;
-            System.out.println(String.format("{%d} releasing to {%d}", id, (id+1)%nbProcess));
             send(new Token(), (id + 1) % nbProcess);
         }
     }
@@ -145,17 +150,27 @@ public class Process implements Runnable, Messager, Broadcaster {
             return;
         }
 
-        Message message = new Message(payload, ++stamp, to);
+        Message message = new Message(payload, ++stamp, to, id);
         bus.postEvent(message);
     }
 
     public void run() {
+        while (nbProcess < NB_PLAYERS) {
+            try {
+                Thread.sleep(5);
+            } catch (InterruptedException e) {
+                /* ignored */
+            }
+        }
+        broadcast(new Ready());
+
         while (this.alive) {
             try {
                 Thread.sleep(20);
-                if (nbProcess >= NB_PLAYERS && !played) {
+                if (nbProcess >= NB_PLAYERS && !played && nbReady >= NB_PLAYERS) {
                     score = dice.next(200);
                     played = true;
+                    nbReady = 0;
                     broadcast(score);
                 }
                 release();
@@ -181,6 +196,7 @@ public class Process implements Runnable, Messager, Broadcaster {
     }
 
     public void stop() {
+        System.out.println(String.format("{%d} stopping...", id));
         release();
         this.alive = false;
     }

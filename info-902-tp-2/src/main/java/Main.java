@@ -12,12 +12,18 @@ public class Main {
         }
 
         try{
-            Thread.sleep(1000);
+            Thread.sleep(3000);
         }catch(Exception e){
             e.printStackTrace();
         }
 
         processes.get(0).broadcast(new Stop());
         processes.get(0).stop();
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
