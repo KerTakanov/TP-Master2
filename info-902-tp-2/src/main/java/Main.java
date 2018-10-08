@@ -20,6 +20,7 @@ public class Main {
         processes.get(0).broadcast(new Stop());
         processes.get(0).stop();
 
+        // wait stop
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {

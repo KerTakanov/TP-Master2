@@ -12,21 +12,22 @@ import java.io.IOException;
 
 public class Process implements Runnable, Messager, Broadcaster {
     public static final int NB_PLAYERS = 10;
+    private static int nbProcess = 0;
 
     private Thread thread;
     private EventBusService bus;
-    private boolean alive;
-    private boolean dead;
-    private static int nbProcess = 0;
+    private Dice dice = new Dice();
+
     private int id = Process.nbProcess++;
     private int stamp = 0;
-    private boolean hasToken;
-    private Dice dice = new Dice();
-    private boolean highest = true;
     private int score;
     private int nbLost = 0;
-    private boolean played = false;
     private int nbReady = 0;
+
+    private boolean alive;
+    private boolean hasToken;
+    private boolean highest = true;
+    private boolean played = false;
 
     public Process(String name) {
         this.bus = EventBusService.getInstance();
@@ -35,7 +36,6 @@ public class Process implements Runnable, Messager, Broadcaster {
         this.thread = new Thread(this);
         this.thread.setName(name);
         this.alive = true;
-        this.dead = false;
 
         if (id == 0) {
             hasToken = true;
@@ -62,6 +62,7 @@ public class Process implements Runnable, Messager, Broadcaster {
 
         stamp = 1 + Math.max(message.getStamp(), stamp);
 
+        // On traite chaque message selon son type
         if (message.getPayload() instanceof Token) {
             onToken();
         } else if (message.getPayload() instanceof Synchronize) {
@@ -77,16 +78,19 @@ public class Process implements Runnable, Messager, Broadcaster {
         }
     }
 
+    /**
+     * Lorsqu'on reçoit un message indiquant qu'un joueur a perdu, on vérifie si on a pas gagné
+     */
     private void onLost() {
         nbLost++;
 
         if (nbLost == NB_PLAYERS - 1 && highest) {
-            System.out.println(String.format("\n{%d} is the winner !", id));
             request();
 
             for (int i = 0; i < 10; ++i) {
                 System.out.print("=");
             }
+            System.out.println(String.format("\n{stamp: %d} {%d} is the winner !", stamp, id));
 
             File file = new File("winners");
             CharSink chs = Files.asCharSink(
@@ -97,6 +101,7 @@ public class Process implements Runnable, Messager, Broadcaster {
 
             release();
 
+            // On synchronise tout le monde, ce qui permet de remettre à zéro
             broadcast(new Synchronize());
             onSynchronize();
         }
@@ -107,36 +112,50 @@ public class Process implements Runnable, Messager, Broadcaster {
     }
 
     private void onDice(int score) {
-        if (this.score < score && highest) {
+        // On considère qu'un processus "perd" lorsqu'il a un score inférieur au score reçu ET si le nombre de perdants
+        // est différent du nb de joueurs - 1 (pour ne pas s'inclure)
+        if (nbLost != NB_PLAYERS - 1 && this.score < score && highest) {
+            System.out.println(String.format("{stamp: %d} {%d} lost", stamp, id));
             highest = false;
             broadcast(new Lost());
         }
     }
 
+    /**
+     * Les processus se synchronisent lorsque le vainqueur a été trouvé
+     * On en profite donc pour remettre à 0 les attributs pour recommencer une partie
+     */
     public void onSynchronize() {
         nbLost = 0;
         score = 0;
         highest = true;
         played = false;
 
+        // On indique aux autres le fait que le processus soit prêt
         broadcast(new Ready());
-        onReady();
+        onReady(); // techniquement, ce processus aussi est prêt
     }
 
     public void onToken() {
         hasToken = true;
     }
 
+    /**
+     * Bloque le thread actuel jusqu'à recevoir le token
+     */
     public void request() {
         while (!hasToken) {
             try {
-                Thread.sleep(1);
+                Thread.sleep(1); // on attend un peu pour ne pas surcharger le CPU
             } catch (InterruptedException ignored) {
                 /* ignored */
             }
         }
     }
 
+    /**
+     * Libère le token en le diffusant au prochain
+     */
     public void release() {
         if (hasToken) {
             hasToken = false;
@@ -155,6 +174,7 @@ public class Process implements Runnable, Messager, Broadcaster {
     }
 
     public void run() {
+        // On attend que tous les process soient démarrés
         while (nbProcess < NB_PLAYERS) {
             try {
                 Thread.sleep(5);
@@ -162,18 +182,23 @@ public class Process implements Runnable, Messager, Broadcaster {
                 /* ignored */
             }
         }
+        // On signale aux autres le fait que l'on soit prêt
         broadcast(new Ready());
 
         while (this.alive) {
             try {
                 Thread.sleep(20);
-                if (nbProcess >= NB_PLAYERS && !played && nbReady >= NB_PLAYERS) {
+                // On ne joue que si tout le monde est prêt et si l'on a pas joué
+                if (!played && nbReady >= NB_PLAYERS) {
                     score = dice.next(200);
                     played = true;
                     nbReady = 0;
                     broadcast(score);
+
+                    System.out.println(String.format("{stamp: %d} {%d} scored %d", stamp, id, score));
                 }
-                release();
+
+                release(); // on relâche dans tous les cas périodiquement, au cas où quelqu'un aurait besoin du token
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -182,22 +207,11 @@ public class Process implements Runnable, Messager, Broadcaster {
         // liberation du bus
         this.bus.unRegisterSubscriber(this);
         this.bus = null;
-        this.dead = true;
-    }
-
-    public void waitStoped() {
-        while (!this.dead) {
-            try {
-                Thread.sleep(500);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     public void stop() {
-        System.out.println(String.format("{%d} stopping...", id));
-        release();
+        System.out.println(String.format("{stamp: %d} {%d} stopping...", stamp, id));
+        release(); // on relâche le token
         this.alive = false;
     }
 }
