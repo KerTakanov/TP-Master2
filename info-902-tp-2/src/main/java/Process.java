@@ -1,17 +1,17 @@
 import com.google.common.base.Charsets;
+import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.io.CharSink;
 import com.google.common.io.FileWriteMode;
 import com.google.common.io.Files;
-import messages.Lost;
-import messages.Message;
-import messages.Synchronize;
-import messages.Token;
+import messages.*;
 
 import java.io.File;
 import java.io.IOException;
 
 public class Process implements Runnable, Messager, Broadcaster {
+    public static final int NB_PLAYERS = 10;
+
     private Thread thread;
     private EventBusService bus;
     private boolean alive;
@@ -45,11 +45,14 @@ public class Process implements Runnable, Messager, Broadcaster {
     @Override
     public void broadcast(Object payload) {
         Message message = new Message(payload, stamp++, null);
-        bus.postEvent(message);
+        if (bus != null) {
+            bus.postEvent(message);
+        }
     }
 
     // Declaration de la methode de callback invoquee lorsqu'un message de type Bidule transite sur le bus
     @Subscribe
+    @AllowConcurrentEvents
     public void receive(Message message) {
         if (message.getDest() != null && id != message.getDest()) {
             return;
@@ -63,6 +66,8 @@ public class Process implements Runnable, Messager, Broadcaster {
             onSynchronize();
         } else if (message.getPayload() instanceof Lost) {
             onLost();
+        } else if (message.getPayload() instanceof Stop) {
+            stop();
         } else {
             onDice((Integer) message.getPayload());
         }
@@ -70,14 +75,15 @@ public class Process implements Runnable, Messager, Broadcaster {
 
     private void onLost() {
         nbLost++;
+        System.out.println(stamp + " " + (nbLost == NB_PLAYERS - 1 && highest));
 
-        if (nbLost == nbProcess - 1 && highest) {
+        if (nbLost == NB_PLAYERS - 1 && highest) {
+            System.out.println(String.format("\n{%d} is the winner !", id));
             request();
 
             for (int i = 0; i < 10; ++i) {
                 System.out.print("=");
             }
-            System.out.println(String.format("\n{%d} is the winner !", id));
 
             File file = new File("winners");
             CharSink chs = Files.asCharSink(
@@ -86,10 +92,10 @@ public class Process implements Runnable, Messager, Broadcaster {
                 chs.write(id + "\n");
             } catch (IOException ignore) { /* ignored */}
 
-            release();
 
             broadcast(new Synchronize());
             onSynchronize();
+            release();
         }
     }
 
@@ -109,22 +115,28 @@ public class Process implements Runnable, Messager, Broadcaster {
     }
 
     public void onToken() {
+        System.out.println(String.format("{%d} received the token", id));
         hasToken = true;
     }
 
     public void request() {
-        while (!hasToken && !dead) {
+        System.out.println(String.format("{%d} requesting...", id));
+        while (!hasToken) {
             try {
                 Thread.sleep(1);
             } catch (InterruptedException ignored) {
                 /* ignored */
             }
         }
+        System.out.println("Got it...");
     }
 
     public void release() {
-        hasToken = false;
-        send(new Token(), (id + 1) % nbProcess);
+        if (hasToken) {
+            hasToken = false;
+            System.out.println(String.format("{%d} releasing to {%d}", id, (id+1)%nbProcess));
+            send(new Token(), (id + 1) % nbProcess);
+        }
     }
 
     @Override
@@ -141,11 +153,12 @@ public class Process implements Runnable, Messager, Broadcaster {
         while (this.alive) {
             try {
                 Thread.sleep(20);
-                if (nbProcess >= 10 && !played) {
+                if (nbProcess >= NB_PLAYERS && !played) {
                     score = dice.next(200);
                     played = true;
                     broadcast(score);
                 }
+                release();
             } catch (Exception e) {
                 e.printStackTrace();
             }

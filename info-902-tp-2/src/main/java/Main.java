@@ -1,3 +1,5 @@
+import messages.Stop;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -5,16 +7,17 @@ public class Main {
     public static void main(String[] args){
 
         List<Process> processes = new ArrayList<>();
-        for (int i = 0; i < 10; ++i) {
+        for (int i = 0; i < Process.NB_PLAYERS; ++i) {
             processes.add(new Process("P" + i));
         }
 
         try{
-            Thread.sleep(10000);
+            Thread.sleep(1000);
         }catch(Exception e){
             e.printStackTrace();
         }
 
-        processes.forEach(Process::stop);
+        processes.get(0).broadcast(new Stop());
+        processes.get(0).stop();
     }
 }
