@@ -12,7 +12,7 @@ function connect() {
 }
 
 function meteoRequest() {
-    stompClient.send("/app/meteo", {}, JSON.stringify({'cp': $("#cp").val()}));
+    stompClient.send("/app/meteo", {}, JSON.stringify({'postalCode': $("#cp").val()}));
 }
 
 function meteoAnswer(answer) {

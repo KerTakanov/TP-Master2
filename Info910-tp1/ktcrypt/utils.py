@@ -1,4 +1,5 @@
 import unidecode
+import operator
 
 
 def sanitize(text: str):
@@ -15,23 +16,36 @@ def freq(text: str):
     return freqs
 
 
-def print_freq(text: str):
-    import pprint
-    pprint.pprint(freq(text))
+def apparitions(text: str):
+    dico_apparitions = {}
+
+    for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+        dico_apparitions[letter] = text.count(letter)
+
+    return dico_apparitions
 
 
-def coincidence_index(text, shift=-1, step=-1, mutual=False, freq_locale=None):
-    if shift != -1 and step != -1:
-        text = subtext(text, shift, step)
+def coincidence_index(freqs):
+    ic = 0
 
-    freq_text = freq(text)
+    for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+        ic += freqs[letter] ** 2
 
-    coincidence = 0
+    return ic
 
-    for letter in freq_text:
-        coincidence += freq_text[letter] * freq_text[letter] if mutual else freq_locale[letter] * freq_text[letter]
 
-    return coincidence
+def mutual_coincidence_index(freqs_txt, freqs_locale, shift):
+    def shifted_letter(letter, shift):
+        l_ord = ord(letter) - ord('A')
+        l_ord += shift
+        return chr((l_ord % 26) + ord('A'))
+
+    ic = 0
+
+    for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+        ic += freqs_txt[shifted_letter(letter, shift)] * freqs_locale[letter]
+
+    return ic
 
 
 def locale_freq_fr():
@@ -66,7 +80,7 @@ def locale_freq_fr():
 
 
 def subtext(text, shift, step):
-    return text[shift:-1:step]
+    return text[shift:-1:step if step else 1]
 
 
 def coincidence_is_french_or_mono(coincidence):
@@ -74,17 +88,59 @@ def coincidence_is_french_or_mono(coincidence):
 
 
 def detect_vigenere(encrypted):
+    key = ""
+
+    freq_fr = locale_freq_fr()
+    freq_txt = freq(encrypted)
+
+    ic_fr = coincidence_index(locale_freq_fr())
+    ic_txt = coincidence_index(freq_txt)
+
+    print(ic_fr)
+
+    for n in range(1, int(len(encrypted) / 10)):
+        nb_fr = 0
+
+        for shift in range(n - 1):
+            freqs = freq(subtext(encrypted, n, shift))
+            ic = coincidence_index(freqs)
+
+            if coincidence_is_french_or_mono(ic):
+                nb_fr += 1
+
+        print(nb_fr, n)
+
+        if nb_fr == n:
+            freqs = freq(encrypted)
+
+            for j in range(n):
+                mutual_coincidence = {}
+                for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+                    mutual_coincidence[c] = freqs[c] * locale_freq_fr()[c]
+
+                key += max(mutual_coincidence.items(), key=operator.itemgetter(1))[0]
+
+            return key
+
+
+    """
     for i in range(1, int(len(encrypted)/10) + 1):
         nb_fr = 0
 
         for j in range(i):
-            if coincidence_is_french_or_mono(coincidence_index(subtext(encrypted, j, i))):
+            ic = coincidence_index(subtext(encrypted, j, i))
+
+            if coincidence_is_french_or_mono(ic):
                 nb_fr += 1
 
         if nb_fr == i:
-            key = ""
+            freqs = freq(encrypted)
 
             for j in range(i):
-                mutual_coincidences = [coincidence_index()]
+                mutual_coincidence = {}
+                for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+                    mutual_coincidence[c] = freqs[c] * locale_freq_fr()[c]
 
-    return None
+                key += max(mutual_coincidence.items(), key=operator.itemgetter(1))[0]
+
+    return key"""

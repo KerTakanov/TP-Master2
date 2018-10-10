@@ -26,7 +26,7 @@ public class MeteoController {
         value.put("type", "String");
         value.put("value", meteoMessage.getPostalCode().trim().replaceAll(" ", ""));
 
-        String pid = (String) camundaRestService.startProcess("Process_1", meteoMessage).getBody().getObject().get("id");
+        String pid = (String) camundaRestService.startProcess("meteo", meteoMessage).getBody().getObject().get("id");
         camundaRestService.completeTask(Collections.singletonMap("variables",
                 Collections.singletonMap("postalCode", value)),
                     camundaRestService.getTaskId(pid, 0));
