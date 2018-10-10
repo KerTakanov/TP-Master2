@@ -20,7 +20,7 @@ public class MeteoController {
     private CamundaRestService camundaRestService;
 
     @MessageMapping("/meteo")
-    public void meteo(MeteoMessage message, MeteoMessage meteoMessage) throws UnirestException {
+    public void meteo(MeteoMessage meteoMessage) throws UnirestException {
         Map<String, String> value = new HashMap<>();
 
         value.put("type", "String");
