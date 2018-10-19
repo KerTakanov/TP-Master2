@@ -1,7 +1,7 @@
 package messages;
 
-public class BroadcastMessage extends Message {
-    public BroadcastMessage(Object payload, int stamp, Integer sender) {
+public class SyncBroadcastMessage extends Message {
+    public SyncBroadcastMessage(Object payload, int stamp, Integer sender) {
         super(payload, stamp, null, sender);
     }
 }

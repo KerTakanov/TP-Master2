@@ -1,12 +1,15 @@
-import java.util.concurrent.Executors;
+package processes;
+
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
+
+import java.util.concurrent.Executors;
 
 public class EventBusService {
 
     private static EventBusService instance = null;
 
-    private EventBus eventBus = null;
+    private EventBus eventBus;
 
     private EventBusService() {
         eventBus = new AsyncEventBus(Executors.newCachedThreadPool());

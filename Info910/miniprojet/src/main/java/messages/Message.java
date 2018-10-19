@@ -3,16 +3,16 @@ package messages;
 import lombok.Data;
 
 @Data
-public class Message {
-    private Object payload;
-    private int stamp;
-    private Integer dest;
-    private Integer sender;
+public abstract class Message {
+    protected Object payload;
+    protected Integer stamp;
+    protected Integer dest;
+    protected Integer sender;
 
-    public Message(Object payload, int stamp, Integer to, Integer sender) {
+    public Message(Object payload, Integer stamp, Integer to, Integer sender) {
         this.payload = payload;
         this.stamp = stamp;
-        dest = to;
+        this.dest = to;
         this.sender = sender;
     }
 }
