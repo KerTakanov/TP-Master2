@@ -87,10 +87,7 @@ public class Process implements Runnable, Messager, Broadcaster {
         if (nbLost == NB_PLAYERS - 1 && highest) {
             request();
 
-            for (int i = 0; i < 10; ++i) {
-                System.out.print("=");
-            }
-            System.out.println(String.format("\n{stamp: %d} {%d} is the winner !", stamp, id));
+            System.out.println(String.format("=========================\n{stamp: %d} {%d} is the winner !", stamp, id));
 
             File file = new File("winners");
             CharSink chs = Files.asCharSink(
@@ -165,12 +162,14 @@ public class Process implements Runnable, Messager, Broadcaster {
 
     @Override
     public void send(Object payload, int to) {
-        if (to == id) {
+        if (to == id || !alive) {
             return;
         }
 
         Message message = new Message(payload, ++stamp, to, id);
-        bus.postEvent(message);
+        if (bus != null) {
+            bus.postEvent(message);
+        }
     }
 
     public void run() {

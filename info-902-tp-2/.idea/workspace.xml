@@ -2,22 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c2b8cb08-9675-4ec1-bf46-2f772ee0ed5c" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/../Info910/miniprojet/src/main/java/Main.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Info910/miniprojet/src/main/java/messages/BroadcastMessage.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Info910/miniprojet/src/main/java/messages/Message.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Info910/miniprojet/src/main/java/messages/ReceivedMessage.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Info910/miniprojet/src/main/java/messages/SyncBroadcastMessage.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Info910/miniprojet/src/main/java/messages/SyncTargetMessage.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Info910/miniprojet/src/main/java/messages/SynchronizeMessage.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Info910/miniprojet/src/main/java/messages/TargetMessage.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Info910/miniprojet/src/main/java/messages/Token.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Info910/miniprojet/src/main/java/processes/EventBusService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Info910/miniprojet/src/main/java/processes/Lamport.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Info910/miniprojet/src/main/java/processes/LetterBox.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Info910/miniprojet/src/main/java/processes/Process.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Info910/miniprojet/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/../Info910/miniprojet/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Info910/miniprojet/src/main/java/comm/Com.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Info910/miniprojet/src/main/java/comm/Com.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/Process.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/classes/Process.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Process.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Process.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/winners" beforeDir="false" afterPath="$PROJECT_DIR$/winners" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/.gradle/" />
@@ -53,10 +41,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Main.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Main.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="102">
+            <state relative-caret-position="51">
               <caret line="6" column="4" selection-start-line="6" selection-start-column="4" selection-end-line="6" selection-end-column="4" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -65,11 +53,14 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Process.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Process.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/Process.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="136">
-              <caret line="8" lean-forward="true" selection-start-line="8" selection-end-line="8" />
+            <state relative-caret-position="207">
+              <caret line="125" column="8" selection-start-line="125" selection-start-column="8" selection-end-line="125" selection-end-column="8" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -111,6 +102,15 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="51">
               <caret line="3" column="76" selection-start-line="3" selection-start-column="76" selection-end-line="3" selection-end-column="76" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Broadcaster.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/Broadcaster.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="51">
+              <caret line="3" column="18" selection-start-line="3" selection-start-column="18" selection-end-line="3" selection-end-column="18" />
             </state>
           </provider>
         </entry>
@@ -567,7 +567,6 @@
     </navigator>
     <panes>
       <pane id="AndroidView" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -606,6 +605,7 @@
         </subPane>
       </pane>
       <pane id="PackagesPane" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -702,14 +702,17 @@
       <workItem from="1539606145476" duration="5000" />
       <workItem from="1539606183215" duration="3321000" />
       <workItem from="1539779699941" duration="622000" />
+      <workItem from="1539846639845" duration="2183000" />
+      <workItem from="1539933748627" duration="2319000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="15283000" />
+    <option name="totallyTimeSpent" value="19785000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info anchor="right" id="Palette" order="3" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -719,12 +722,12 @@
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="right" id="Maven Projects" order="3" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.41285402" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.4117647" />
       <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Terminal" order="7" weight="0.33223322" />
+      <window_info anchor="bottom" id="Terminal" order="7" weight="0.33115467" />
       <window_info id="Capture Tool" order="2" />
       <window_info id="Designer" order="2" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1977612" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.20202559" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="3" />
       <window_info anchor="right" id="BPMNPalette" order="3" />
@@ -994,13 +997,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/Broadcaster.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" column="18" selection-start-line="3" selection-start-column="18" selection-end-line="3" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/winners">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -1063,13 +1059,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/Process.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="8" lean-forward="true" selection-start-line="8" selection-end-line="8" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/messages/Lost.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="51">
@@ -1079,8 +1068,25 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
+        <state relative-caret-position="51">
           <caret line="6" column="4" selection-start-line="6" selection-start-column="4" selection-end-line="6" selection-end-column="4" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/Broadcaster.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" column="18" selection-start-line="3" selection-start-column="18" selection-end-line="3" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/Process.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="207">
+          <caret line="125" column="8" selection-start-line="125" selection-start-column="8" selection-end-line="125" selection-end-column="8" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

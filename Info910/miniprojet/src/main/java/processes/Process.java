@@ -28,7 +28,7 @@ public class Process implements Lamport {
     private LetterBox heartbits = new LetterBox();
 
     public Process() {
-
+        init();
     }
 
     public void init() {
@@ -71,6 +71,7 @@ public class Process implements Lamport {
                     for (Process process : processes) {
                         if (alive && !process.isAlive() && process.getId() < id) {
                             id = process.getId();
+                            break;
                         }
                     }
 

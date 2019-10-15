@@ -10,13 +10,14 @@ import processes.Process;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Getter
 public class Com {
     private Process process;
     private EventBusService bus;
     private Token token;
-    private boolean syncing;
+    private AtomicBoolean syncing = new AtomicBoolean(false);
     private CountDownLatch latch = new CountDownLatch(2);
     private CyclicBarrier barrier = new CyclicBarrier(2);
 
@@ -26,7 +27,7 @@ public class Com {
         this.bus.registerSubscriber(this);
 
         if (process.getId() == 0) {
-            token = new Token();
+            token = new Token(0);
         }
     }
 
@@ -35,8 +36,13 @@ public class Com {
     }
 
     public void synchronize() {
-        syncing = true;
+        bus.postEvent(new SynchronizeMessage());
+    }
 
+    private void synchronizeInternal() {
+        syncing.set(true);
+
+        System.out.println(String.format("Process %d syncing", process.getId()));
         bus.postEvent(new SynchronizeMessage());
 
         try {
@@ -44,8 +50,9 @@ public class Com {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        System.out.println(String.format("Process %d done syncing", process.getId()));
 
-        syncing = false;
+        syncing.set(false);
     }
 
     public void broadcastSync(Object payload) {
@@ -109,7 +116,7 @@ public class Com {
         if (token == null)
             return;
 
-        send(token, (process.getId() + 1) % Process.processes.size());
+        bus.postEvent(new Token((process.getId() + 1) % Process.processes.size()));
     }
 
     @Subscribe
@@ -151,25 +158,27 @@ public class Com {
         }
 
         latch = new CountDownLatch(Process.processes.size() - 1);
-        synchronize();
+        synchronizeInternal();
     }
 
     @Subscribe
     @AllowConcurrentEvents
     public void onSynchronize(SynchronizeMessage message) {
-        if (syncing) {
+        if (syncing.get()) {
             latch.countDown();
             return;
         }
 
-        latch = new CountDownLatch(Process.processes.size() - 1);
-        synchronize();
+        latch = new CountDownLatch(Process.processes.size());
+        synchronizeInternal();
     }
 
     @Subscribe
     @AllowConcurrentEvents
     public void onToken(Token token) {
-        this.token = token;
+        if (token.getDest() == process.getId()) {
+            this.token = token;
+        }
     }
 
     @Subscribe
